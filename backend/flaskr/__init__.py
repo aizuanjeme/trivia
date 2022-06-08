@@ -22,11 +22,11 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
-    # CORS(app)
+    CORS(app)
     """
     @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
     """
-    CORS(app, resources={r"*/api/*" : {"origins": '*'}})
+    # CORS(app, resources={r"*/api/*" : {"origins": '*'}})
     
     
     """ 
@@ -51,6 +51,22 @@ def create_app(test_config=None):
     Create an endpoint to handle GET requests
     for all available categories.
     """
+    
+    @app.route("/categories", methods=["GET"])
+    def get_all_categories():
+        categories= Category.query.all()
+        category =[]
+        for cat in categories:
+            category.append({
+                "id": cat.id,
+                "type":cat.type
+            })
+            # category[cat.id] = cat.type
+        return jsonify({
+            "data":category,
+            "totalCount": len(category)
+        })    
+        
 
 
     """
@@ -84,7 +100,43 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
+    @app.route("/questions", methods=["POST"])
+    def post_question():
+        data = request.json.get
+        
+        question = data("question")
+        answer = data("answer")
+        category = data("category")
+        difficulty = data("difficulty")
+        
+        if not (question and answer and category and difficulty):
+            return abort(400)
+        question_data = Question(question,answer,category,difficulty)
+        question_data.insert()
+        return jsonify({
+            "question": question_data.format(),
+            "error": False,
+            "success":True,
+            "successMessage": "ok"
+        })
 
+
+    @app.route("/catergories", methods=["POST"])
+    def post_category():
+        data = request.json.get
+        
+        type = data("type")
+        
+        if not (type):
+            return abort(400)
+        category_data = Category(type)
+        category_data.insert()
+        return jsonify({
+            "category": category_data.format(),
+            "error": False,
+            "success":True,
+            "successMessage": "ok"
+        })
     """
     @TODO:
     Create a POST endpoint to get questions based on a search term.
@@ -122,6 +174,38 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "Not found"
+        }), 404
+        
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "Unprocessable"
+        }), 422
+        
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "Bad Request"
+        }), 400
+        
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({
+            "success": False,
+            "error": 405,
+            "message": "Method Not Allowed"
+        }), 405
 
     return app
 
