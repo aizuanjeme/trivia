@@ -23,8 +23,15 @@ def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
     # CORS(app)
+    """
+    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+    """
     CORS(app, resources={r"*/api/*" : {"origins": '*'}})
     
+    
+    """ 
+    @TODO: Use the after_request decorator to set Access-Control-Allow
+    """
     # CORS Headers
     @app.after_request
     def after_request(response):
@@ -36,14 +43,8 @@ def create_app(test_config=None):
         )
         return response
 
-    """
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
-    """
-
-    """
     
-    @TODO: Use the after_request decorator to set Access-Control-Allow
-    """
+
 
     """
     @TODO:
