@@ -1,4 +1,5 @@
 import os
+from unicodedata import category
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -156,6 +157,22 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
+    @app.route("/categories/<int:categoryId>/questions")
+    def get_questions_by_category(categoryId):
+        category = Category.query.filter(Category.id  == categoryId).one_or_none()
+        
+        if category is None:
+            abort(422)
+            
+        questions = Question.query.filter((Question.category) == str(category.id)).all()
+        paginated_questions= paginate_questions(request, questions)
+        
+        return jsonify({
+            "success": True,
+            "data": paginated_questions,
+            "totalCount":len(questions),
+            "current_category": category.type
+        })
 
     """
     @TODO:
