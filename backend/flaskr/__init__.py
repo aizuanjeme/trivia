@@ -7,7 +7,7 @@ import random
 
 from models import setup_db, Question, Category
 
-QUESTIONS_PER_PAGE = 10
+QUESTIONS_PER_PAGE = 2
 
 def paginate_questions(request, selection):
     page = request.args.get("page", 1, type=int)
@@ -82,6 +82,39 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+    @app.route('/questions')
+    def get_questions():
+        # get paginated questions and categories
+        questions = Question.query.order_by(Question.id).all()
+        total_questions = len(questions)
+        categories = Category.query.order_by(Category.id).all()
+
+        # Get paginated questions
+        current_questions = paginate_questions(request, questions)
+
+        # return 404 if there are no questions for the page number
+        # if (len(current_questions) == 0):
+        #     abort(404)
+
+        # categories_dict = {}
+        # for category in categories:
+        #     categories_dict[category.id] = category.type
+        category =[]
+        for cat in categories:
+            category.append({
+                "id": cat.id,
+                "type":cat.type
+            })
+
+        # return values if there are no errors
+        return jsonify({
+            'success': True,
+            'totalCount': total_questions,
+            'categories': category,
+            'questions': current_questions,
+            'limit': QUESTIONS_PER_PAGE
+        }), 200
+
 
     """
     @TODO:
@@ -164,7 +197,7 @@ def create_app(test_config=None):
         if category is None:
             abort(422)
             
-        questions = Question.query.filter((Question.category) == str(category.id)).all()
+        questions = Question.query.filter((Question.category) == str(category.id)).order_by(Question.id).all()
         paginated_questions= paginate_questions(request, questions)
         
         return jsonify({
@@ -185,6 +218,27 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
+
+    @app.route("/questions/<int:question_id>", methods=["PATCH"])
+    def update_question(question_id):
+        data = request.get_json()
+        
+        try:
+            question = Question.query.filter(Question.id == question_id).one_or_none()
+            if question is None:
+                abort(404)
+            if "rating" in data:
+                question.rating = int(data.get("rating"))
+                
+            question.update()
+            return jsonify({
+                "sucessMessage": "Success",
+                "success": True,
+                "id": question.id, 
+                "categoryId": question.category                 
+            })
+        except:
+            abort(400)     
 
     """
     @TODO:
