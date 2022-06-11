@@ -111,7 +111,7 @@ def create_app(test_config=None):
             'success': True,
             'totalCount': total_questions,
             'categories': category,
-            'questions': current_questions,
+            'data': current_questions,
             'limit': QUESTIONS_PER_PAGE
         }), 200
 
@@ -123,6 +123,9 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
+    
+    
+
 
     """
     @TODO:
@@ -142,10 +145,12 @@ def create_app(test_config=None):
         answer = data("answer")
         category = data("category")
         difficulty = data("difficulty")
+        rating = data("rating")
         
-        if not (question and answer and category and difficulty):
+        
+        if not (question and answer and category and difficulty and rating):
             return abort(400)
-        question_data = Question(question,answer,category,difficulty)
+        question_data = Question(question,answer,category,difficulty,rating)
         question_data.insert()
         return jsonify({
             "question": question_data.format(),
@@ -204,7 +209,8 @@ def create_app(test_config=None):
             "success": True,
             "data": paginated_questions,
             "totalCount":len(questions),
-            "current_category": category.type
+            "current_category": category.type,
+            "limit":QUESTIONS_PER_PAGE
         })
 
     """
