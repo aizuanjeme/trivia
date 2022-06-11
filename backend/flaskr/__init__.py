@@ -124,8 +124,32 @@ def create_app(test_config=None):
     This removal will persist in the database and when you refresh the page.
     """
     
-    
+    @app.route('/questions/<int:id>', methods=['DELETE'])
+    def delete_question(id):
+        '''
+        Handles DELETE requests for deleting a question by id.
+        '''
 
+        try:
+            # get the question by id
+            question = Question.query.filter_by(id=id).one_or_none()
+
+            # abort 404 if no question found
+            if question is None:
+                abort(404)
+
+            # delete the question
+            question.delete()
+
+            # return success response
+            return jsonify({
+                'success': True,
+                'deleted': id
+            })
+
+        except:
+            # abort if problem deleting question
+            abort(422)
 
     """
     @TODO:
