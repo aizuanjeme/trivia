@@ -73,3 +73,30 @@ img.category {
 img.delete {
   width: 20px;
 }
+/* div.star {
+  width: 20px;
+  height: 20px;
+  margin: 2px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url('../star-black.png');
+}
+
+div.star.active {
+  background-image: url('../star.png')
+} */
+button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.on {
+  color: orange;
+}
+.off {
+  color: blanchedalmond;
+}
+.rating{
+ font-size: 30px;
+}
