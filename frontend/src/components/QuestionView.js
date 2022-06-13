@@ -46,7 +46,7 @@ class QuestionView extends Component {
 
   createPagination() {
     let pageNumbers = [];
-    let maxPage = Math.ceil(this.state.totalQuestions / 10);
+    let maxPage = Math.ceil(this.state.totalQuestions / 2);
     for (let i = 1; i <= maxPage; i++) {
       pageNumbers.push(
         <span
@@ -126,6 +126,27 @@ class QuestionView extends Component {
     }
   };
 
+  // changeRating = (id, rating) => {
+  //   let questions = [...this.state.questions]
+  //   let targetBook = questions.find((question) => question.id === id);
+
+  //   $.ajax({
+  //     url: `/questions/${id}`, //TODO: update request URL
+  //     type: "PATCH",
+  //     dataType: 'json',
+  //     contentType: 'application/json',
+  //     data: JSON.stringify({'rating': rating}),
+  //     success: (result) => {
+  //       targetBook.rating = rating
+  //       this.setState({questions})
+  //     },
+  //     error: (error) => {
+  //       alert('Unable to update the rating.')
+  //       return;
+  //     }
+  //   })
+  // }
+
   render() {
     return (
       <div className='question-view'>
@@ -166,6 +187,8 @@ class QuestionView extends Component {
               category={this.state.categories[q.category]}
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
+              // rateQuestion={this.changeRating(q.id, q.rating)}
+              rating={q.rating}
             />
           ))}
           <div className='pagination-menu'>{this.createPagination()}</div>

@@ -7,39 +7,30 @@ class Header extends Component {
   }
 
   render() {
-    return (
-      <div className='App-header'>
-        <h1
-          onClick={() => {
-            this.navTo('');
-          }}
-        >
-          Udacitrivia
-        </h1>
-        <h2
-          onClick={() => {
-            this.navTo('');
-          }}
-        >
-          List
-        </h2>
-        <h2
-          onClick={() => {
-            this.navTo('/add');
-          }}
-        >
-          Add
-        </h2>
-        <h2
-          onClick={() => {
-            this.navTo('/play');
-          }}
-        >
-          Play
-        </h2>
-      </div>
-    );
+      return (
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark ">
+          <div className="navbar-brand" onClick={() => {this.navTo('')}}>Udacitrivia</div>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon" />
+          </button>
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <div className="nav-link" onClick={() => {this.navTo('')}}>List <span className="sr-only">(current)</span></div>
+              </li>
+              <li className="nav-item">
+                <div className="nav-link" onClick={() => {this.navTo('/add')}}>Add</div>
+              </li>
+    
+              <li className="nav-item">
+                <div className="nav-link " onClick={() => {this.navTo('/play')}}>Play</div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+    
+      )
+    }
+    
   }
-}
-
 export default Header;

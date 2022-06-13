@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import '../stylesheets/Question.css';
 
+// const starArray = [5, 4, 3, 2, 1]
+
 class Question extends Component {
   constructor() {
     super();
@@ -9,12 +11,32 @@ class Question extends Component {
     };
   }
 
+  // createStars() {
+  //   let { id, rating } = this.props;
+
+  //   return (
+  //     <div className="rating">
+  //       {starArray.map(num => (
+  //         <button
+  //           type="button"
+  //           key={num}
+  //           name='rating'
+  //           className={`star ${rating >= num ? "active" : "off"}`}
+  //           onClick={() => { this.props.changeRating(id, num) }}
+  //         >
+  //           <span className="star">&#9733;</span>
+  //         </button>
+  //       ))}
+  //     </div>
+  //   )
+  // }
+
   flipVisibility() {
     this.setState({ visibleAnswer: !this.state.visibleAnswer });
   }
 
   render() {
-    const { question, answer, category, difficulty } = this.props;
+    const { question, answer, category, difficulty, rating, id } = this.props;
     return (
       <div className='Question-holder'>
         <div className='Question'>{question}</div>
@@ -31,6 +53,23 @@ class Question extends Component {
             className='delete'
             onClick={() => this.props.questionAction('DELETE')}
           />
+        </div>
+        {/* {this.createStars()} */}
+        <div className="rating">
+          {[...Array(5)].map((star, index) => {
+            index += 1;
+            return (
+              <button
+                type="button"
+                key={index}
+                name='rating'
+                className={index <= rating ? "on" : "off"}
+                // onClick={() => this.props.rateQuestion(id, index)}
+              >
+                <span className="star">&#9733;</span>
+              </button>
+            );
+          })}
         </div>
         <div
           className='show-answer button'
