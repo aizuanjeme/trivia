@@ -64,7 +64,7 @@ class Question extends Component {
                 key={index}
                 name='rating'
                 className={index <= rating ? "on" : "off"}
-                // onClick={() => this.props.rateQuestion(id, index)}
+                onClick={() => this.props.changeRating(this.props.id, index)}
               >
                 <span className="star">&#9733;</span>
               </button>
