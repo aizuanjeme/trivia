@@ -126,26 +126,26 @@ class QuestionView extends Component {
     }
   };
 
-  // changeRating = (id, rating) => {
-  //   let questions = [...this.state.questions]
-  //   let targetBook = questions.find((question) => question.id === id);
+  changeRating = (id, rating) => {
+    let questions = [...this.state.questions]
+    let targetQuestion = questions.find((question) => question.id === id);
 
-  //   $.ajax({
-  //     url: `/questions/${id}`, //TODO: update request URL
-  //     type: "PATCH",
-  //     dataType: 'json',
-  //     contentType: 'application/json',
-  //     data: JSON.stringify({'rating': rating}),
-  //     success: (result) => {
-  //       targetBook.rating = rating
-  //       this.setState({questions})
-  //     },
-  //     error: (error) => {
-  //       alert('Unable to update the rating.')
-  //       return;
-  //     }
-  //   })
-  // }
+    $.ajax({
+      url: `/questions/${id}`, //TODO: update request URL
+      type: "PATCH",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({'rating': rating}),
+      success: (result) => {
+        targetQuestion.rating = rating
+        this.setState({questions})
+      },
+      error: (error) => {
+        alert('Unable to update the rating.')
+        return;
+      }
+    })
+  }
 
   render() {
     return (
@@ -187,8 +187,9 @@ class QuestionView extends Component {
               category={this.state.categories[q.category]}
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
-              // rateQuestion={this.changeRating(q.id, q.rating)}
               rating={q.rating}
+              changeRating={this.changeRating}
+                {...q}
             />
           ))}
           <div className='pagination-menu'>{this.createPagination()}</div>
