@@ -11,26 +11,6 @@ class Question extends Component {
     };
   }
 
-  // createStars() {
-  //   let { id, rating } = this.props;
-
-  //   return (
-  //     <div className="rating">
-  //       {starArray.map(num => (
-  //         <button
-  //           type="button"
-  //           key={num}
-  //           name='rating'
-  //           className={`star ${rating >= num ? "active" : "off"}`}
-  //           onClick={() => { this.props.changeRating(id, num) }}
-  //         >
-  //           <span className="star">&#9733;</span>
-  //         </button>
-  //       ))}
-  //     </div>
-  //   )
-  // }
-
   flipVisibility() {
     this.setState({ visibleAnswer: !this.state.visibleAnswer });
   }
