@@ -312,12 +312,31 @@ def create_app(test_config=None):
         user_data = User(user,playscore)
         user_data.insert()
         return jsonify({
-            "category": user_data.format(),
+            "user": user_data.format(),
             "error": False,
             "success":True,
             "successMessage": "ok"
         })
 
+    @app.route("/users/<int:user_id>", methods=["PATCH"])
+    def update_user(user_id):
+        data = request.get_json()
+        
+        try:
+            user = User.query.filter(User.id == user_id).one_or_none()
+            if user is None:
+                abort(404)
+            if "rating" in data:
+                user.rating = int(data.get("rating"))
+                
+            user.update()
+            return jsonify({
+                "sucessMessage": "Success",
+                "success": True,
+                "id": user.id, 
+            })
+        except:
+            abort(400)     
 
     """
     @TODO:
