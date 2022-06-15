@@ -135,10 +135,10 @@ class QuestionView extends Component {
       type: "PATCH",
       dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify({'rating': rating}),
+      data: JSON.stringify({ 'rating': rating }),
       success: (result) => {
         targetQuestion.rating = rating
-        this.setState({questions})
+        this.setState({ questions })
       },
       error: (error) => {
         alert('Unable to update the rating.')
@@ -189,10 +189,13 @@ class QuestionView extends Component {
               questionAction={this.questionAction(q.id)}
               rating={q.rating}
               changeRating={this.changeRating}
-                {...q}
+              {...q}
             />
+
           ))}
-          <div className='pagination-menu'>{this.createPagination()}</div>
+          {this.state.questions.length === 0 && <h5>No Question</h5>}
+
+          {this.state.questions.length === 0 && <div className='pagination-menu'>{this.createPagination()}</div>}
         </div>
       </div>
     );
