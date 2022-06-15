@@ -227,22 +227,30 @@ def create_app(test_config=None):
         '''
 
         # get the category by id
-        category = Category.query.filter_by(id=id).one_or_none()
+        # category = Category.query.filter_by(id=id).one_or_none()
 
-        # abort 400 for bad request if category isn't found
-        if (category is None):
-            abort(400)
+        # # abort 400 for bad request if category isn't found
+        # if (category is None):
+        #     abort(400)
 
-        # get the matching questions
-        selection = Question.query.filter_by(category=category.id).all()
+        # # get the matching questions
+        # selection = Question.query.filter_by(category=category.id).all()
 
-        # paginate the selection
-        paginated = paginate_questions(request, selection)
+        # # paginate the selection
+        # paginated = paginate_questions(request, selection)
 
+        category = Category.query.filter(Category.id  == id).one_or_none()
+        
+        if category is None:
+            abort(422)
+            
+        questions = Question.query.filter((Question.category) == str(category.id)).order_by(Question.id).all()
+        paginated_questions= paginate_questions(request, questions)
+        
         # return the results
         return jsonify({
             'success': True,
-            'questions': paginated,
+            'questions': paginated_questions,
             'total_questions': len(Question.query.all()),
             'current_category': category.type
         })
