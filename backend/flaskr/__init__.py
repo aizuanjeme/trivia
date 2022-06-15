@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import User, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
@@ -294,6 +294,25 @@ def create_app(test_config=None):
         category_data.insert()
         return jsonify({
             "category": category_data.format(),
+            "error": False,
+            "success":True,
+            "successMessage": "ok"
+        })
+        
+        
+    @app.route("/users", methods=["POST"])
+    def post_user():
+        data = request.json.get
+        
+        user = data("user")
+        playscore = 0
+        
+        if not (user):
+            return abort(400)
+        user_data = User(user,playscore)
+        user_data.insert()
+        return jsonify({
+            "category": user_data.format(),
             "error": False,
             "success":True,
             "successMessage": "ok"
