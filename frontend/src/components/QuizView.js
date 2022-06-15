@@ -3,6 +3,7 @@ import $ from 'jquery';
 import '../stylesheets/QuizView.css';
 
 const questionsPerPlay = 5;
+let username = ""
 
 class QuizView extends Component {
   constructor(props) {
@@ -16,9 +17,9 @@ class QuizView extends Component {
       currentQuestion: {},
       guess: '',
       forceEnd: false,
+      user:''
     };
   }
-
   componentDidMount() {
     $.ajax({
       url: `/categories`, //TODO: update request URL
@@ -78,6 +79,32 @@ class QuizView extends Component {
     });
   };
 
+  submitUser = (event) => {
+    event.preventDefault();
+    $.ajax({
+      url: '/users', //TODO: update request URL
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        user: this.state.user,
+      }),
+      xhrFields: {
+        withCredentials: true,
+      },
+      crossDomain: true,
+      success: (result) => {
+        username = result.user
+        this.setState({ user: result.user }, this.componentDidMount);
+        return;
+      },
+      error: (error) => {
+        alert('Unable to add category. Please try your request again');
+        return;
+      },
+    });
+  };
+
   submitGuess = (event) => {
     event.preventDefault();
     let evaluate = this.evaluateAnswer();
@@ -126,6 +153,25 @@ class QuizView extends Component {
     );
   }
 
+  renderUser() {
+    return (
+      <div className='quiz-play-holder'>
+        <h2 className='mt-3'>Fill your nickname</h2>
+        <form
+          className='form-view'
+          id='add-category-form'
+          onSubmit={this.submitUser}
+        >
+          <label>
+            Nick 
+            <input type='text' name='user' onChange={this.handleChange} />
+          </label>
+          <input type='submit' className='button' value='Submit' />
+        </form>
+      </div>
+    );
+  }
+
   renderFinalScore() {
     return (
       <div className='quiz-play-holder'>
@@ -142,7 +188,7 @@ class QuizView extends Component {
   evaluateAnswer = () => {
     const formatGuess = this.state.guess
       // eslint-disable-next-line
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
+      // .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
       .toLowerCase();
     const answerArray = this.state.currentQuestion.answer
       .toLowerCase()
@@ -193,7 +239,7 @@ class QuizView extends Component {
   }
 
   render() {
-    return this.state.quizCategory ? this.renderPlay() : this.renderPrePlay();
+    return username !==''? this.state.quizCategory ? this.renderPlay() : this.renderPrePlay(): this.renderUser();
   }
 }
 
