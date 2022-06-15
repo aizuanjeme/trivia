@@ -1,5 +1,4 @@
 import os
-from unicodedata import category
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -131,71 +130,30 @@ def create_app(test_config=None):
             # abort if problem deleting question
             abort(422)
 
-    # @app.route('/questions', methods=['POST'])
-    # def post_question():
-    #     '''
-    #     Handles POST requests for creating new questions and searching questions.
-    #     '''
-    #     # load the request body
-    #     body = request.get_json()
+    @app.route('/questions/search', methods=['POST'])
+    def search_question():
+        data = request.json.get
+        
+        search_term = data('searchTerm')
 
-    #     # if search term is present
-    #     if (body.get('searchTerm')):
-    #         search_term = body.get('searchTerm')
+            # query the database using search term
+        selection = Question.query.filter(
+                Question.question.ilike(f'%{search_term}%')).all()
 
-    #         # query the database using search term
-    #         selection = Question.query.filter(
-    #             Question.question.ilike(f'%{search_term}%')).all()
+            # 404 if no results found
+        if (len(selection) == 0):
+                abort(404)
 
-    #         # 404 if no results found
-    #         if (len(selection) == 0):
-    #             abort(404)
+            # paginate the results
+        paginated = paginate_questions(request, selection)
 
-    #         # paginate the results
-    #         paginated = paginate_questions(request, selection)
+            # return results
+        return jsonify({
+                'success': True,
+                'questions': paginated,
+                'total_questions': len(Question.query.all())
+            })
 
-    #         # return results
-    #         return jsonify({
-    #             'success': True,
-    #             'questions': paginated,
-    #             'total_questions': len(Question.query.all())
-    #         })
-    #     # if no search term, create new question
-    #     else:
-    #         # load data from body
-    #         new_question = body.get('question')
-    #         new_answer = body.get('answer')
-    #         new_difficulty = body.get('difficulty')
-    #         new_category = body.get('category')
-    #         new_rating = body.get('rating')
-
-    #         # ensure all fields have data
-    #         if ((new_question is None) or (new_answer is None)
-    #                 or (new_difficulty is None) or (new_category is None) or (new_rating is None)):
-    #             abort(422)
-
-    #         try:
-    #             # create and insert new question
-    #             question = Question(question=new_question, answer=new_answer,
-    #                                 difficulty=new_difficulty, category=new_category, rating=new_rating)
-    #             question.insert()
-
-    #             # get all questions and paginate
-    #             selection = Question.query.order_by(Question.id).all()
-    #             current_questions = paginate_questions(request, selection)
-
-    #             # return data to view
-    #             return jsonify({
-    #                 'success': True,
-    #                 'created': question.id,
-    #                 'question_created': question.question,
-    #                 'questions': current_questions,
-    #                 'total_questions': len(Question.query.all())
-    #             })
-
-    #         except:
-    #             # abort unprocessable if exception
-    #             abort(422)
     
     @app.route("/questions", methods=["POST"])
     def post_question():
@@ -218,27 +176,13 @@ def create_app(test_config=None):
             "success":True,
             "successMessage": "ok"
         })
+        
 
-
-    @app.route('/categories/<int:id>/questions')
+    @app.route('/categories/<int:id>/questions', methods=["GET"])
     def get_questions_by_category(id):
         '''
         Handles GET requests for getting questions based on category.
         '''
-
-        # get the category by id
-        # category = Category.query.filter_by(id=id).one_or_none()
-
-        # # abort 400 for bad request if category isn't found
-        # if (category is None):
-        #     abort(400)
-
-        # # get the matching questions
-        # selection = Question.query.filter_by(category=category.id).all()
-
-        # # paginate the selection
-        # paginated = paginate_questions(request, selection)
-
         category = Category.query.filter(Category.id  == id).one_or_none()
         
         if category is None:
@@ -338,6 +282,23 @@ def create_app(test_config=None):
         except:
             abort(400)     
     
+    @app.route("/categories", methods=["POST"])
+    def post_category():
+        data = request.json.get
+        
+        type = data("type")
+        
+        if not (type):
+            return abort(400)
+        category_data = Category(type)
+        category_data.insert()
+        return jsonify({
+            "category": category_data.format(),
+            "error": False,
+            "success":True,
+            "successMessage": "ok"
+        })
+
 
     """
     @TODO:
