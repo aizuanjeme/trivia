@@ -94,7 +94,8 @@ class QuizView extends Component {
       },
       crossDomain: true,
       success: (result) => {
-        username = result.user
+        username = result.user.user
+        localStorage.setItem("nickname", JSON.stringify(result.user));
         this.setState({ user: result.user }, this.componentDidMount);
         return;
       },
@@ -183,6 +184,25 @@ class QuizView extends Component {
         </div>
       </div>
     );
+  }
+
+  renderScoreToUser = (score) => {
+    const user = JSON.parse(localStorage.getItem("nickname"));
+    $.ajax({
+      url: `/users/${user.id}`, //TODO: update request URL
+      type: "PATCH",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({ 'playscore': score }),
+      success: (result) => {
+        // targetQuestion.rating = rating
+        // this.setState({ questions })
+      },
+      error: (error) => {
+        alert('Unable to update the rating.')
+        return;
+      }
+    })
   }
 
   evaluateAnswer = () => {
