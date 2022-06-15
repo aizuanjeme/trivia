@@ -66,7 +66,7 @@ class FormView extends Component {
   render() {
     return (
       <div id='add-form'>
-        <h2>Add a New Trivia Question</h2>
+        <h2 className='mt-3'>Add a New Trivia Question</h2>
         <form
           className='form-view'
           id='add-question-form'

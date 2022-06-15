@@ -19,7 +19,10 @@ class Header extends Component {
                 <div className="nav-link" onClick={() => {this.navTo('')}}>List <span className="sr-only">(current)</span></div>
               </li>
               <li className="nav-item">
-                <div className="nav-link" onClick={() => {this.navTo('/add')}}>Add</div>
+                <div className="nav-link" onClick={() => {this.navTo('/add')}}>Add Question</div>
+              </li>
+              <li className="nav-item">
+                <div className="nav-link" onClick={() => {this.navTo('/addcategory')}}>Add Catergory</div>
               </li>
     
               <li className="nav-item">
