@@ -79,6 +79,41 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertTrue(len(categories_after) - len(categories_before) == 1)
+        
+    def test_new_user(self):
+
+        users_before = User.query.all()
+
+        response = self.client().post("/users", json=self.new_user)
+
+        data = json.loads(response.data)
+
+        users_after = User.query.all()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(len(users_after) - len(users_before) == 1)
+        
+    def test_get_questions(self):
+
+        response = self.client().get("/questions")
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+
+        self.assertTrue(data["total_questions"])
+        self.assertTrue(len(data["questions"]))
+
+    def test_get_categories(self):
+
+        response = self.client().get("/categories")
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+
+        self.assertTrue(data['categories'])
 
 
 # Make the tests conveniently executable
