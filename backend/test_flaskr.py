@@ -39,6 +39,9 @@ class TriviaTestCase(unittest.TestCase):
             'user': 'Loval',
             'playscore': 0
         }
+            self.rate = {
+            'rating': 3
+        }
                     
 
 
@@ -127,14 +130,48 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_search_questions(self):
 
-        response = self.client().post("/questions",
-                                      json={"searchTerm": "dna"})
+        response = self.client().post("/questions", json={"searchTerm": "dna"})
 
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(data["questions"]), 1)
         self.assertEqual(data["questions"][0]["id"], 6)
+
+    def test_rating_question(self):
+
+        question = Question.query.filter_by(id=1).one_or_none()
+        question_rate_before = question.rate
+
+        response = self.client().patch("/questions/1", json=self.rate)
+        question_rate_after = question.rate
+
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(question_rate_after != question_rate_before)
+        
+    def test_delete_question(self):
+        """Tests question deletion success"""
+
+        response = self.client().delete('/questions/1')
+        
+        questions_before = Question.query.all()
+
+        question = Question.query.filter(Question.id == 1).one_or_none()
+        
+        data = json.loads(response.data)
+
+        questions_after = Question.query.all()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['deleted'], 1)
+
+        self.assertTrue(len(questions_before) - len(questions_after) == 1)
+
+        self.assertEqual(question, None)
 
 
 # Make the tests conveniently executable
