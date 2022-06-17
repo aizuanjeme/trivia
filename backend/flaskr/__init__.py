@@ -326,8 +326,8 @@ def create_app(test_config=None):
             user = User.query.filter(User.id == user_id).one_or_none()
             if user is None:
                 abort(404)
-            if "rating" in data:
-                user.rating = int(data.get("rating"))
+            if "playscore" in data:
+                user.playscore = int(data.get("playscore"))
                 
             user.update()
             return jsonify({
