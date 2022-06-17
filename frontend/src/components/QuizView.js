@@ -125,6 +125,7 @@ class QuizView extends Component {
       guess: '',
       forceEnd: false,
     });
+    localStorage.removeItem("nickname")
   };
 
   renderPrePlay() {
@@ -178,6 +179,7 @@ class QuizView extends Component {
       <div className='quiz-play-holder'>
         <div className='final-header'>
           Your Final Score is {this.state.numCorrect}
+          {this.renderScoreToUser(this.state.numCorrect)}
         </div>
         <div className='play-again button' onClick={this.restartGame}>
           Play Again?
