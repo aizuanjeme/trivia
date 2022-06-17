@@ -5,6 +5,7 @@ import '../stylesheets/QuizView.css';
 const questionsPerPlay = 5;
 let username = ""
 
+
 class QuizView extends Component {
   constructor(props) {
     super();
@@ -175,9 +176,11 @@ class QuizView extends Component {
   }
 
   renderFinalScore() {
+    const player = JSON.parse(localStorage.getItem("nickname"));
     return (
       <div className='quiz-play-holder'>
         <div className='final-header'>
+          <h4>Dear {player.user}</h4><br/>
           Your Final Score is {this.state.numCorrect}
           {this.renderScoreToUser(this.state.numCorrect)}
         </div>
