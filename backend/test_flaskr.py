@@ -115,6 +115,27 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertTrue(data['categories'])
 
+    def test_get_questions_category(self):
+
+        response = self.client().get("/categories/1/questions")
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue(data["total_questions"])
+        self.assertTrue(len(data["questions"]))
+
+    def test_search_questions(self):
+
+        response = self.client().post("/questions",
+                                      json={"searchTerm": "dna"})
+
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data["questions"]), 1)
+        self.assertEqual(data["questions"][0]["id"], 6)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
