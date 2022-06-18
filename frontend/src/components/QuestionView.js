@@ -11,7 +11,7 @@ class QuestionView extends Component {
       questions: [],
       page: 1,
       totalQuestions: 0,
-      categories: {},
+      categories: [],
       currentCategory: null,
     };
   }
@@ -159,18 +159,18 @@ class QuestionView extends Component {
             Categories
           </h2>
           <ul>
-            {Object.keys(this.state.categories).map((id) => (
+            {(this.state.categories).map((cat, ind) => (
               <li
-                key={id}
+                key={cat.id}
                 onClick={() => {
-                  this.getByCategory(id);
+                  this.getByCategory(cat.id);
                 }}
               >
-                {this.state.categories[id]}
+                {cat.type}
                 <img
                   className='category'
-                  alt={`${this.state.categories[id].toLowerCase()}`}
-                  src={`${this.state.categories[id].toLowerCase()}.svg`}
+                  alt={`${cat.type.toLowerCase()}`}
+                  src={`${cat.type.toLowerCase()}.svg`}
                 />
               </li>
             ))}
