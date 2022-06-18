@@ -58,21 +58,31 @@ def create_app(test_config=None):
         Handles GET requests for getting all categories.
         '''
 
-        # get all categories and add to dict
-        categories = Category.query.all()
-        categories_dict = {}
-        for category in categories:
-            categories_dict[category.id] = category.type
+                # get paginated questions and categories
+        questions = Question.query.order_by(Question.id).all()
+        total_questions = len(questions)
+        categories = Category.query.order_by(Category.id).all()
 
-        # abort 404 if no categories found
-        if (len(categories_dict) == 0):
-            abort(404)
+        # Get paginated questions
+        current_questions = paginate_questions(request, questions)
 
-        # return data to view
+        category =[]
+        for cat in categories:
+            category.append({
+                "id": cat.id,
+                "type":cat.type
+            })
+
+        # return values if there are no errors
         return jsonify({
             'success': True,
-            'categories': categories_dict
-        })
+            'totalCount': total_questions,
+            'categories': category,
+            'data': current_questions,
+            'limit': QUESTIONS_PER_PAGE
+        }), 200
+
+
 
     @app.route('/questions')
     def get_questions():
@@ -85,12 +95,13 @@ def create_app(test_config=None):
         total_questions = len(selection)
         current_questions = paginate_questions(request, selection)
 
-        # get all categories and add to dict
         categories = Category.query.all()
-        categories_dict = {}
-        for category in categories:
-            categories_dict[category.id] = category.type
-
+        category =[]
+        for cat in categories:
+            category.append({
+                "id": cat.id,
+                "type":cat.type
+            })
         # abort 404 if no questions
         if (len(current_questions) == 0):
             abort(404)
@@ -100,7 +111,7 @@ def create_app(test_config=None):
             'success': True,
             'questions': current_questions,
             'total_questions': total_questions,
-            'categories': categories_dict
+            'categories': category
         })
 
     @app.route('/questions/<int:id>', methods=['DELETE'])
@@ -204,18 +215,14 @@ def create_app(test_config=None):
         '''
         Handles POST requests for playing quiz.
         '''
-
-        # load the request body
-        body = request.get_json()
-
-        # get the previous questions
-        previous = body.get('previous_questions')
-
-        # get the category
-        category = body.get('quiz_category')
+        
+        # process the request data and get the values
+        data = request.json.get
+        previous_questions = data('previous_questions')
+        category = data('quiz_category')
 
         # abort 400 if category or previous questions isn't found
-        if ((category is None) or (previous is None)):
+        if ((category is None) or (previous_questions is None)):
             abort(400)
 
         # load questions all questions if "ALL" is selected
@@ -223,7 +230,7 @@ def create_app(test_config=None):
             questions = Question.query.all()
         # load questions for given category
         else:
-            questions = Question.query.filter_by(category=category['id']).all()
+            questions = Question.query.filter(Question.category == str(category['id'])).all()
 
         # get total number of questions
         total = len(questions)
@@ -233,24 +240,24 @@ def create_app(test_config=None):
             return questions[random.randrange(0, len(questions), 1)]
 
         # checks to see if question has already been used
-        def check_if_used(question):
-            used = False
-            for q in previous:
+        def check_if_answered(question):
+            answered = False
+            for q in previous_questions:
                 if (q == question.id):
-                    used = True
+                    answered = True
 
-            return used
+            return answered
 
         # get random question
         question = get_random_question()
 
         # check if used, execute until unused question found
-        while (check_if_used(question)):
+        while (check_if_answered(question)):
             question = get_random_question()
 
             # if all questions have been tried, return without question
             # necessary if category has <5 questions
-            if (len(previous) == total):
+            if (len(previous_questions) == total):
                 return jsonify({
                     'success': True
                 })
