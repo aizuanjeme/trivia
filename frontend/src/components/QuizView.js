@@ -18,7 +18,7 @@ class QuizView extends Component {
       currentQuestion: {},
       guess: '',
       forceEnd: false,
-      user:''
+      user: ''
     };
   }
   componentDidMount() {
@@ -64,14 +64,19 @@ class QuizView extends Component {
       },
       crossDomain: true,
       success: (result) => {
-        this.setState({
-          showAnswer: false,
-          previousQuestions: previousQuestions,
-          currentQuestion: result.question,
-          guess: '',
-          forceEnd: result.question ? false : true,
-        });
-        return;
+        console.log({result})
+        if (result.empty === true) {
+          this.noQuestion()
+        } else {
+          this.setState({
+            showAnswer: false,
+            previousQuestions: previousQuestions,
+            currentQuestion: result.question,
+            guess: '',
+            forceEnd: result.question ? false : true,
+          });
+          return;
+        }
       },
       error: (error) => {
         alert('Unable to load question. Please try your request again');
@@ -126,7 +131,14 @@ class QuizView extends Component {
       guess: '',
       forceEnd: false,
     });
+    username=""
     localStorage.removeItem("nickname")
+  };
+
+  noQuestion = () => {
+    alert('no question in this catergory')
+    // username=''
+    window.location.href = `${window.location.origin}/play`;    
   };
 
   renderPrePlay() {
@@ -166,7 +178,7 @@ class QuizView extends Component {
           onSubmit={this.submitUser}
         >
           <label>
-            Nick 
+            Nick
             <input type='text' name='user' onChange={this.handleChange} />
           </label>
           <input type='submit' className='button' value='Submit' />
@@ -180,7 +192,7 @@ class QuizView extends Component {
     return (
       <div className='quiz-play-holder'>
         <div className='final-header'>
-          <h4>Dear {player.user}</h4><br/>
+          <h4>Dear {player.user}</h4><br />
           Your Final Score is {this.state.numCorrect}
           {this.renderScoreToUser(this.state.numCorrect)}
         </div>
@@ -264,7 +276,7 @@ class QuizView extends Component {
   }
 
   render() {
-    return username !==''? this.state.quizCategory ? this.renderPlay() : this.renderPrePlay(): this.renderUser();
+    return username !== '' ? this.state.quizCategory ? this.renderPlay() : this.renderPrePlay() : this.renderUser();
   }
 }
 
