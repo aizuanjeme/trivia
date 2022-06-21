@@ -4,9 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
+from sqlalchemy import func
+
 from models import User, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+
 
 def paginate_questions(request, selection):
     page = request.args.get("page", 1, type=int)
@@ -18,6 +21,7 @@ def paginate_questions(request, selection):
 
     return current_questions
 
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -27,8 +31,7 @@ def create_app(test_config=None):
     @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
     """
     # CORS(app, resources={r"*/api/*" : {"origins": '*'}})
-    
-    
+
     """ 
     @TODO: Use the after_request decorator to set Access-Control-Allow
     """
@@ -43,22 +46,19 @@ def create_app(test_config=None):
         )
         return response
 
-    
-
-
     """
     @TODO:
     Create an endpoint to handle GET requests
     for all available categories.
     """
-    
+
     @app.route('/categories')
     def get_categories():
         '''
         Handles GET requests for getting all categories.
         '''
 
-                # get paginated questions and categories
+        # get paginated questions and categories
         questions = Question.query.order_by(Question.id).all()
         total_questions = len(questions)
         categories = Category.query.order_by(Category.id).all()
@@ -66,11 +66,11 @@ def create_app(test_config=None):
         # Get paginated questions
         current_questions = paginate_questions(request, questions)
 
-        category =[]
+        category = []
         for cat in categories:
             category.append({
                 "id": cat.id,
-                "type":cat.type
+                "type": cat.type
             })
 
         # return values if there are no errors
@@ -81,8 +81,6 @@ def create_app(test_config=None):
             'data': current_questions,
             'limit': QUESTIONS_PER_PAGE
         }), 200
-
-
 
     @app.route('/questions')
     def get_questions():
@@ -96,11 +94,11 @@ def create_app(test_config=None):
         current_questions = paginate_questions(request, selection)
 
         categories = Category.query.all()
-        category =[]
+        category = []
         for cat in categories:
             category.append({
                 "id": cat.id,
-                "type":cat.type
+                "type": cat.type
             })
         # abort 404 if no questions
         if (len(current_questions) == 0):
@@ -144,64 +142,63 @@ def create_app(test_config=None):
     @app.route('/questions/search', methods=['POST'])
     def search_question():
         data = request.json.get
-        
+
         search_term = data('searchTerm')
 
-            # query the database using search term
+        # query the database using search term
         selection = Question.query.filter(
-                Question.question.ilike(f'%{search_term}%')).all()
+            Question.question.ilike(f'%{search_term}%')).all()
 
-            # 404 if no results found
+        # 404 if no results found
         if (len(selection) == 0):
-                abort(404)
+            abort(404)
 
             # paginate the results
         paginated = paginate_questions(request, selection)
 
-            # return results
+        # return results
         return jsonify({
-                'success': True,
-                'questions': paginated,
-                'total_questions': len(Question.query.all())
-            })
+            'success': True,
+            'questions': paginated,
+            'total_questions': len(Question.query.all())
+        })
 
-    
     @app.route("/questions", methods=["POST"])
     def post_question():
         data = request.json.get
-        
+
         question = data("question")
         answer = data("answer")
         category = data("category")
         difficulty = data("difficulty")
         rating = data("rating")
-        
-        
+
         if not (question and answer and category and difficulty and rating):
             return abort(400)
-        question_data = Question(question,answer,category,difficulty,rating)
+        question_data = Question(
+            question, answer, category, difficulty, rating)
         question_data.insert()
         return jsonify({
             "question": question_data.format(),
             "error": False,
-            "success":True,
+            "success": True,
             "successMessage": "ok"
         })
-        
 
     @app.route('/categories/<int:id>/questions', methods=["GET"])
     def get_questions_by_category(id):
         '''
         Handles GET requests for getting questions based on category.
         '''
-        category = Category.query.filter(Category.id  == id).one_or_none()
-        
+        category = Category.query.filter(Category.id == id).one_or_none()
+
         if category is None:
             abort(422)
-            
-        questions = Question.query.filter((Question.category) == str(category.id)).order_by(Question.id).all()
-        paginated_questions= paginate_questions(request, questions)
-        
+
+        questions = Question.query.filter((Question.category) == str(
+            category.id)).order_by(Question.id).all()
+        paginated_questions = paginate_questions(request, questions)
+
         # return the results
         return jsonify({
             'success': True,
@@ -215,7 +212,7 @@ def create_app(test_config=None):
         '''
         Handles POST requests for playing quiz.
         '''
-        
+
         # process the request data and get the values
         data = request.json.get
         previous_questions = data('previous_questions')
@@ -227,74 +224,66 @@ def create_app(test_config=None):
 
         # load questions all questions if "ALL" is selected
         if (category['id'] == 0):
-            questions = Question.query.all()
-        # load questions for given category
+            questions = Question.query.filter(~Question.id.in_(previous_questions))
+            ##########################################################################
+            questions_test = Question.query.filter()
+        # load questions for given category and th question that is not in previous_question
         else:
-            questions = Question.query.filter(Question.category == str(category['id'])).all()
+            questions = Question.query.filter(Question.category == str(
+                category['id']), ~Question.id.in_(previous_questions))
+            ################################################################
+            questions_test = Question.query.filter(Question.category == str(
+                category['id']))
 
-        # get total number of questions
-        total = len(questions)
-
-        # picks a random question
-        def get_random_question():
-            return questions[random.randrange(0, len(questions), 1)]
-
-        # checks to see if question has already been used
-        def check_if_answered(question):
-            answered = False
-            for q in previous_questions:
-                if (q == question.id):
-                    answered = True
-
-            return answered
-
-        # get random question
-        question = get_random_question()
-
-        # check if used, execute until unused question found
-        while (check_if_answered(question)):
-            question = get_random_question()
-
-            # if all questions have been tried, return without question
-            # necessary if category has <5 questions
-            if (len(previous_questions) == total):
-                return jsonify({
-                    'success': True
-                })
+        if len(questions_test.all()) == 0:
+            return jsonify({
+                'success': True,
+                'empty': True
+            })
+        else:
+            question = questions.order_by(func.random()).first()
 
         # return the question
-        return jsonify({
-            'success': True,
-            'question': question.format()
-        })
-        
+            if not question:
+                return jsonify({
+                    'success': True,
+                    'empty': False
+                })
+
+            return jsonify({
+                'success': True,
+                'question': question.format(),
+                'empty': False
+            })
+
     @app.route("/questions/<int:question_id>", methods=["PATCH"])
     def update_question(question_id):
         data = request.get_json()
-        
+
         try:
-            question = Question.query.filter(Question.id == question_id).one_or_none()
+            question = Question.query.filter(
+                Question.id == question_id).one_or_none()
             if question is None:
                 abort(404)
             if "rating" in data:
                 question.rating = int(data.get("rating"))
-                
+
             question.update()
             return jsonify({
                 "sucessMessage": "Success",
                 "success": True,
-                "id": question.id, 
-                "categoryId": question.category                 
+                "id": question.id,
+                "categoryId": question.category
             })
         except:
-            abort(400)     
-    
+            abort(400)
+
     @app.route("/categories", methods=["POST"])
     def post_category():
         data = request.json.get
-        
+
         type = data("type")
-        
+
         if not (type):
             return abort(400)
         category_data = Category(type)
@@ -302,48 +291,47 @@ def create_app(test_config=None):
         return jsonify({
             "category": category_data.format(),
             "error": False,
-            "success":True,
+            "success": True,
             "successMessage": "ok"
         })
-        
-        
+
     @app.route("/users", methods=["POST"])
     def post_user():
         data = request.json.get
-        
+
         user = data("user")
         playscore = 0
-        
+
         if not (user):
             return abort(400)
-        user_data = User(user,playscore)
+        user_data = User(user, playscore)
         user_data.insert()
         return jsonify({
             "user": user_data.format(),
             "error": False,
-            "success":True,
+            "success": True,
             "successMessage": "ok"
         })
 
     @app.route("/users/<int:user_id>", methods=["PATCH"])
     def update_user(user_id):
         data = request.get_json()
-        
+
         try:
             user = User.query.filter(User.id == user_id).one_or_none()
             if user is None:
                 abort(404)
             if "playscore" in data:
                 user.playscore = int(data.get("playscore"))
-                
+
             user.update()
             return jsonify({
                 "sucessMessage": "Success",
                 "success": True,
-                "id": user.id, 
+                "id": user.id,
             })
         except:
-            abort(400)     
+            abort(400)
 
     """
     @TODO:
@@ -358,7 +346,7 @@ def create_app(test_config=None):
             "error": 404,
             "message": "Not found"
         }), 404
-        
+
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
@@ -366,7 +354,7 @@ def create_app(test_config=None):
             "error": 422,
             "message": "Unprocessable"
         }), 422
-        
+
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
@@ -374,7 +362,7 @@ def create_app(test_config=None):
             "error": 400,
             "message": "Bad Request"
         }), 400
-        
+
     @app.errorhandler(405)
     def method_not_allowed(error):
         return jsonify({
@@ -384,4 +372,3 @@ def create_app(test_config=None):
         }), 405
 
     return app
-
