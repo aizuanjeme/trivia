@@ -15,7 +15,7 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}:{}@{}/{}".format("postgres", "!pass4sure", "localhost:5432", self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -40,7 +40,7 @@ class TriviaTestCase(unittest.TestCase):
             'playscore': 0
         }
             self.rate = {
-            'rating': 3
+            'rating': 4
         }
                     
     
@@ -118,7 +118,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_questions_category(self):
 
-        response = self.client().get("/categories/1/questions")
+        response = self.client().get("/categories/3/questions")
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -138,11 +138,11 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_rating_question(self):
 
-        question = Question.query.filter_by(id=1).one_or_none()
-        question_rate_before = question.rate
+        question = Question.query.filter_by(id=6).one_or_none()
+        question_rate_before = question.rating
 
-        response = self.client().patch("/questions/1", json=self.rate)
-        question_rate_after = question.rate
+        response = self.client().patch("/questions/6", json=self.rate)
+        question_rate_after = question.rating
 
         data = json.loads(response.data)
 
@@ -153,11 +153,11 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question(self):
         """Tests question deletion success"""
 
-        response = self.client().delete('/questions/1')
+        response = self.client().delete('/questions/8')
         
         questions_before = Question.query.all()
 
-        question = Question.query.filter(Question.id == 1).one_or_none()
+        question = Question.query.filter(Question.id == 8).one_or_none()
         
         data = json.loads(response.data)
 
@@ -165,7 +165,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'], 1)
+        self.assertEqual(data['deleted'], 8)
 
         self.assertTrue(len(questions_before) - len(questions_after) == 1)
 
@@ -176,7 +176,7 @@ class TriviaTestCase(unittest.TestCase):
             "/quizzes",
             json={
                 "previous_questions": [10],
-                "quiz_category": {"type": "Science", "id": "2"},
+                "quiz_category": {"type": "Science", "id": "3"},
             },
         )
 
