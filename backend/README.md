@@ -191,7 +191,7 @@ You will need to provide detailed documentation of your API endpoints including 
     "answer": "Science is what it is",
     "category": 4,
     "difficulty": 2,
-    "rating":2
+    "rating": 2
   },
   "success": true
 }
@@ -210,7 +210,7 @@ You will need to provide detailed documentation of your API endpoints including 
     "answer": "Science is what it is",
     "category": 4,
     "difficulty": 2,
-    "rating":2
+    "rating": 2
   }],
   "success": true,
   "total_questions": 20
@@ -224,18 +224,18 @@ You will need to provide detailed documentation of your API endpoints including 
             "answer": "Africa",
             "difficulty": 3,
             "category": "3",
-            "rating":4
+            "rating": 4
         }'`.
 - Request Arguments: None
 - Returns: An object of success message.
 ```json
 {
-  "question":{
+  "question": {
             "question": "Where is Nigeria?",
             "answer": "Africa",
             "difficulty": 3,
             "category": "3",
-            "rating":4
+            "rating": 4
         },
   "successMessage": "ok",
   "success": true,
@@ -251,7 +251,7 @@ You will need to provide detailed documentation of your API endpoints including 
 - Returns: An object of success message.
 ```json
 {
-  "category":{
+  "category": {
             "type": "Art",
         },
   "successMessage": "ok",
@@ -259,6 +259,54 @@ You will need to provide detailed documentation of your API endpoints including 
   "error": false,
 }
 ```
+`POST '/api/v1.0/user'`
+
+- Takes the object of value that is been passed i.e `'{
+            "user": "Steph",
+            "playscore": "0",
+        }'`.
+- Request Arguments: None
+- Returns: An object of success message.
+```json
+{
+  "category": {
+            "user": "Steph",
+            "playscore": 0,
+        },
+  "successMessage": "ok",
+  "success": true,
+  "error": false,
+}
+```
+
+`PATCH '/api/v1.0/users/<int:id>'`
+
+- Takes the id of the user
+- Request Arguments: None
+- Returns: An object of success message.
+
+```json
+{
+                "sucessMessage": "Success",
+                "success": true,
+                "id": "id",
+            }
+```
+`PATCH '/api/v1.0/questions/<int:id>'`
+
+- Takes the id of the questions
+- Request Arguments: None
+- Returns: An object of success message.
+
+```json
+{
+                "sucessMessage": "Success",
+                "success": true,
+                "id": 3,
+                "categoryId": 4
+            }
+```
+
 # Testing
 
 Write at least one test for the success and at least one error behavior of each endpoint using the unittest library.
