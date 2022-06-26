@@ -197,7 +197,68 @@ You will need to provide detailed documentation of your API endpoints including 
 }
 
 ```
+`POST '/api/v1.0/questions/search'`
 
+- Takes the object of value that is been passed in the search form i.e `'{"searchTerm": "science"}'`.
+- Request Arguments: page
+- Returns: An array of object that matches the searchTerm.
+```json
+{
+  "question": [{
+    "id": 1,
+    "question": "What is Science",
+    "answer": "Science is what it is",
+    "category": 4,
+    "difficulty": 2,
+    "rating":2
+  }],
+  "success": true,
+  "total_questions": 20
+}
+
+```
+`POST '/api/v1.0/questions'`
+
+- Takes the object of value that is been passed i.e `'{
+            "question": "Where is Nigeria?",
+            "answer": "Africa",
+            "difficulty": 3,
+            "category": "3",
+            "rating":4
+        }'`.
+- Request Arguments: None
+- Returns: An object of success message.
+```json
+{
+  "question":{
+            "question": "Where is Nigeria?",
+            "answer": "Africa",
+            "difficulty": 3,
+            "category": "3",
+            "rating":4
+        },
+  "successMessage": "ok",
+  "success": true,
+  "error": false,
+}
+```
+`POST '/api/v1.0/category'`
+
+- Takes the object of value that is been passed i.e `'{
+            "type": "Art",
+        }'`.
+- Request Arguments: None
+- Returns: An object of success message.
+```json
+{
+  "category":{
+            "type": "Art",
+        },
+  "successMessage": "ok",
+  "success": true,
+  "error": false,
+}
+```
 # Testing
 
 Write at least one test for the success and at least one error behavior of each endpoint using the unittest library.
