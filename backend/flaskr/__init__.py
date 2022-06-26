@@ -224,7 +224,8 @@ def create_app(test_config=None):
 
         # load questions all questions if "ALL" is selected
         if (category['id'] == 0):
-            questions = Question.query.filter(~Question.id.in_(previous_questions))
+            questions = Question.query.filter(
+                ~Question.id.in_(previous_questions))
             ##########################################################################
             questions_test = Question.query.filter()
         # load questions for given category and th question that is not in previous_question
@@ -370,7 +371,7 @@ def create_app(test_config=None):
             "error": 405,
             "message": "Method Not Allowed"
         }), 405
-        
+
     @app.errorhandler(500)
     def internal_server_error(error):
         return jsonify({
