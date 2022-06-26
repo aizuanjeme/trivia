@@ -80,13 +80,89 @@ You will need to provide detailed documentation of your API endpoints including 
 - Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
 
 ```json
+[
+  {
+    "id":1,
+    "type": "Science"
+  }
+  {
+    "id":2,
+    "type": "Art"
+  }
+  {
+    "id":3,
+    "type": "Geography"
+  }
+  {
+    "id":4,
+    "type": "History"
+  }
+  {
+    "id":5,
+    "type": "Entertainment"
+  }
+  {
+    "id":6,
+    "type": "Sports"
+  }
+]
+```
+`GET '/api/v1.0/questions'`
+
+- Fetches a dictionary of questions in which the keys are the ids and the value is the corresponding string of the category
+- Request Arguments: page
+- Returns: An Array of object, `questions`,
+
+```json
 {
-  "1": "Science",
-  "2": "Art",
-  "3": "Geography",
-  "4": "History",
-  "5": "Entertainment",
-  "6": "Sports"
+"success":true, 
+"questions": [
+{
+  "question": "What is Science",
+  "answer":"Science is what it is",
+  "difficulty":2,
+  "catergory":1,
+  "rating":4
+}
+{
+  "question": "What is Technology",
+  "answer":"Technology is what it is",
+  "difficulty":2,
+  "catergory":2,
+  "rating":2
+}
+{
+  "question": "What is Art",
+  "answer":"Art is what it is",
+  "difficulty":4,
+  "catergory":5,
+  "rating":3
+}
+],
+"total_question":4,
+"limit": 10
+}
+```
+
+`GET '/api/v1.0/categories/<int:id>/questions'`
+
+- Fetches a dictionary of question based on there category in which the keys are the ids and the value is the corresponding string of the category
+- Request Arguments: page
+- Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
+```json
+{
+  "success": true,
+  "questions": [
+    {
+  "question": "What is Science",
+  "answer":"Science is what it is",
+  "difficulty":2,
+  "catergory":1,
+  "rating":4
+    }
+  ],
+  "total_questions": 4,
+  "current_category": "Science"
 }
 ```
 
