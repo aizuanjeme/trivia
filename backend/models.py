@@ -3,12 +3,13 @@ from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-# SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') 
+# SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 # if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
 #     SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
-    
+
 database_name = 'trivia'
-database_path = "postgresql://{}:{}@{}/{}".format("postgres", "!pass4sure", "localhost:5432", database_name)
+database_path = "postgresql://{}:{}@{}/{}".format(
+    "postgres", "!pass4sure", "localhost:5432", database_name)
 
 db = SQLAlchemy()
 
@@ -16,6 +17,8 @@ db = SQLAlchemy()
 setup_db(app)
     binds a flask application and a SQLAlchemy service
 """
+
+
 def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -25,10 +28,13 @@ def setup_db(app, database_path=database_path):
     #    db.create_all()
     db.create_all()
 
+
 """
 Question
 
 """
+
+
 class Question(db.Model):
     __tablename__ = 'questions'
 
@@ -38,7 +44,6 @@ class Question(db.Model):
     category = Column(String)
     difficulty = Column(Integer)
     rating = Column(Integer)
-
 
     def __init__(self, question, answer, category, difficulty, rating):
         self.question = question
@@ -67,12 +72,15 @@ class Question(db.Model):
             'difficulty': self.difficulty,
             'rating': self.rating,
 
-            }
+        }
+
 
 """
 Category
 
 """
+
+
 class Category(db.Model):
     __tablename__ = 'categories'
 
@@ -81,7 +89,7 @@ class Category(db.Model):
 
     def __init__(self, type):
         self.type = type
-        
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -92,16 +100,20 @@ class Category(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
     def format(self):
         return {
             'id': self.id,
             'type': self.type
-            }
-        
+        }
+
+
 """
 User
 
-"""        
+"""
+
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -112,7 +124,7 @@ class User(db.Model):
     def __init__(self, user, playscore):
         self.user = user
         self.playscore = playscore
-        
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -123,9 +135,10 @@ class User(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
     def format(self):
         return {
             'id': self.id,
             'user': self.user,
             'playscore': self.playscore
-            }      
+        }
